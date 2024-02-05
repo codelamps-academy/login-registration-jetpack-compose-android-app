@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Login Registration Jetpack Compose</string>
+    <string name="heythere">Hey There,</string>
+    <string name="create_an_account">Create An Account</string>
+</resources>
