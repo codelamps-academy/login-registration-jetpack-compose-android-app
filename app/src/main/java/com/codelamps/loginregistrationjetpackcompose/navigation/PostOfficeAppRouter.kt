@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 sealed class Screen{
     object SignUpScreen : Screen()
     object TermsAndConditonScreen : Screen()
+
+    object LoginScreen : Screen()
 }
 
 object PostOfficeAppRouter {

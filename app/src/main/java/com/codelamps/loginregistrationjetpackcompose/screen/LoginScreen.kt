@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -17,12 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.codelamps.loginregistrationjetpackcompose.R
-import com.codelamps.loginregistrationjetpackcompose.app.PostOfficeApp
 import com.codelamps.loginregistrationjetpackcompose.comoponents.ButtonComponent
+import com.codelamps.loginregistrationjetpackcompose.comoponents.ClickableForgotPasswordLoginComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.ClickableLoginTextComponent
+import com.codelamps.loginregistrationjetpackcompose.comoponents.ClickableRegisterTextComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.DividerTextComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.HeadingTextComponent
-import com.codelamps.loginregistrationjetpackcompose.comoponents.MyCheckboxComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.MyPasswordFieldComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.MyTextFieldComponent
 import com.codelamps.loginregistrationjetpackcompose.comoponents.NormalTextComponent
@@ -30,56 +29,54 @@ import com.codelamps.loginregistrationjetpackcompose.navigation.PostOfficeAppRou
 import com.codelamps.loginregistrationjetpackcompose.navigation.Screen
 
 @Composable
-fun SignUpScreen() {
+fun LoginScreen(){
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(28.dp)
+            .background(Color.White)
+            .padding(15.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            NormalTextComponent(value = stringResource(R.string.heythere))
-            HeadingTextComponent(value = stringResource(R.string.create_an_account))
 
-            Spacer(modifier = Modifier.height(20.dp))
+        NormalTextComponent(value = stringResource(id = R.string.heythere))
+            HeadingTextComponent(value = stringResource(R.string.welcome_back))
+
+            Spacer(modifier = Modifier.height(15.dp))
 
             MyTextFieldComponent(
-                labelValue = stringResource(R.string.fullname),
-                painter = painterResource(id = R.drawable.profiles)
+                labelValue = stringResource(id = R.string.email), painter = painterResource(
+                    id = R.drawable.mail
+                )
             )
-            MyTextFieldComponent(
-                labelValue = stringResource(R.string.email),
-                painter = painterResource(id = R.drawable.mail)
-            )
+
             MyPasswordFieldComponent(
-                labelValue = stringResource(R.string.password),
-                painter = painterResource(id = R.drawable.padlock)
+                labelValue = stringResource(id = R.string.password), painter = painterResource(
+                    id = R.drawable.padlock
+                )
             )
 
-            MyCheckboxComponent(onTextSelected = { PostOfficeAppRouter })
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(80.dp))
+            ClickableForgotPasswordLoginComponent(onTextSelected = {})
 
-            ButtonComponent(value = stringResource(R.string.register))
+            Spacer(modifier = Modifier.height(170.dp))
 
-            Spacer(
-                modifier = Modifier
-                    .height(10.dp)
-            )
+            ButtonComponent(value = stringResource(R.string.login))
 
             DividerTextComponent()
 
-            ClickableLoginTextComponent(tryingLogin = true, onTextSelected = {PostOfficeAppRouter.navigateTo(Screen.LoginScreen)
-            })
-
+            ClickableLoginTextComponent(tryingLogin = false, onTextSelected = {PostOfficeAppRouter.navigateTo(Screen.SignUpScreen)})
         }
+
     }
 }
 
 
-@Preview
 @Composable
-fun DefaultPreviewOfSignUpScreen() {
-    SignUpScreen()
+@Preview
+fun LoginScreenPreview(){
+    LoginScreen()
 }

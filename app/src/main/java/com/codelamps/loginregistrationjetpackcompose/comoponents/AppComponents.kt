@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
@@ -49,6 +50,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +63,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -85,7 +90,6 @@ fun NormalTextComponent(value: String) {
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal
         ),
-        color = TextColor,
         textAlign = TextAlign.Center
     )
 }
@@ -103,7 +107,6 @@ fun HeadingTextComponent(value: String) {
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal
         ),
-        color = TextColor,
         textAlign = TextAlign.Center
     )
 }
@@ -127,12 +130,14 @@ fun MyTextFieldComponent(labelValue: String, painter: Painter) {
             cursorColor = PrimaryColor,
             placeholderColor = BgColor
         ),
-        keyboardOptions = KeyboardOptions.Default,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Text, capitalization = KeyboardCapitalization.Characters),
         value = textValue.value,
         onValueChange = {
             textValue.value = it
         },
-        leadingIcon = { Icon(painter = painter, contentDescription = null) }
+        leadingIcon = { Icon(painter = painter, contentDescription = null) },
+        singleLine = true,
+        maxLines = 1
     )
 }
 
@@ -143,6 +148,7 @@ fun MyPasswordFieldComponent(labelValue: String, painter: Painter) {
     }
 
     var passwordVisibility by remember { mutableStateOf(false) }
+    val localFocusManager = LocalFocusManager.current
 
 
     OutlinedTextField(
@@ -150,13 +156,15 @@ fun MyPasswordFieldComponent(labelValue: String, painter: Painter) {
             .fillMaxWidth()
             .clip(shapes.small),
         label = { Text(text = labelValue) },
+
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = PrimaryColor,
             focusedLabelColor = PrimaryColor,
             cursorColor = PrimaryColor,
             placeholderColor = BgColor
         ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardActions = KeyboardActions{localFocusManager.clearFocus()},
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done, ),
         value = textValue.value,
         onValueChange = {
             textValue.value = it
@@ -303,9 +311,9 @@ fun DividerTextComponent(){
 }
 
 @Composable
-fun ClickableLoginTextComponent(onTextSelected: (String) -> Unit){
-    val initialText = "Already have an account"
-    val loginText = " Login"
+fun ClickableLoginTextComponent(tryingLogin : Boolean = true, onTextSelected: (String) -> Unit){
+    val initialText = if (tryingLogin) "Already have an account" else "Don't have an Account yet?"
+    val loginText = if (tryingLogin) " Login" else " Register"
 
     val annotatedString = buildAnnotatedString {
         append(initialText)
@@ -322,15 +330,74 @@ fun ClickableLoginTextComponent(onTextSelected: (String) -> Unit){
             fontSize = 15.sp,
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Center
-        ), text = annotatedString, onClick = { offset ->
+        ), text = annotatedString,
+        onClick = { offset ->
         annotatedString.getStringAnnotations(offset, offset)
             .firstOrNull()?.also { span ->
                 // add log
-                Log.i("ClickableLoginTextComponent", "${span.item}")
+                Log.i("ClickableregisterTextComponent", "${span.item}")
                 if (span.item == loginText){
-                    onTextSelected(span.item)
+                    onTextSelected(loginText)
                 }
             }
 
     })
 }
+
+
+@Composable
+fun ClickableForgotPasswordLoginComponent(onTextSelected: (String) -> Unit){
+    val initialText = "Forgot your password?"
+
+    val annotatedString = buildAnnotatedString {
+        withStyle(style = SpanStyle(color = PrimaryColor)){
+            pushStringAnnotation(tag = initialText, annotation = initialText)
+            append(initialText)
+        }
+    }
+
+    ClickableText(text = annotatedString, onClick = {offset ->
+        annotatedString.getStringAnnotations(offset, offset)
+            .firstOrNull()?.also { span ->
+                // add log
+                Log.i("ClickableForgotPasswordLoginComponent", "${span.item}")
+                if (span.item == initialText){
+                    onTextSelected(span.item)
+                }
+            }
+    })
+}
+
+@Composable
+fun ClickableRegisterTextComponent(onTextSelected: (String) -> Unit){
+    val initialText = "Don't have an account yet?"
+    val registerText = " Register"
+
+    val annotatedString = buildAnnotatedString {
+        append(initialText)
+        withStyle(style = SpanStyle(color = PrimaryColor)){
+            pushStringAnnotation(tag = registerText, annotation = registerText)
+            append(registerText)
+        }
+    }
+
+    ClickableText(modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(40.dp),
+        style = TextStyle(
+            fontSize = 15.sp,
+            fontStyle = FontStyle.Normal,
+            textAlign = TextAlign.Center
+        ), text = annotatedString, onClick = { offset ->
+            annotatedString.getStringAnnotations(offset, offset)
+                .firstOrNull()?.also { span ->
+                    // add log
+                    Log.i("ClickableRegisterTextComponent", "${span.item}")
+                    if (span.item == registerText){
+                        onTextSelected(span.item)
+                    }
+                }
+
+        })
+}
+
